@@ -22,6 +22,8 @@ $light-purple-color:  lighten($purple-color, 25%);
 $pink-color:          #f92080 !default;
 $pink-color-light:    #ffdddd !default;
 $yellow-color:        #efcc00 !default;
+$shamalama-color:     rgb(24, 27, 221) !default;
+$light-shamalama-color: lighten($shamalama-color, 25%);
 
 $grey-color:          #828282 !default;
 $grey-color-light:    lighten($grey-color, 40%);
@@ -33,5 +35,5 @@ $black-color: #000000 !default;
 
 // Theme colors
 
-$code-bg-color-light:     rgba($purple-color, 0.05);
+$code-bg-color-light:     rgba($shamalama-color, 0.05);
 $code-bg-color-dark:      #2c3237 !default;
