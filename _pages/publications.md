@@ -9,7 +9,7 @@ nav: true
 
     <div>
         <h3>
-            pre-prints
+            Pre-prints
         </h3>
         <ol>
             <li>
