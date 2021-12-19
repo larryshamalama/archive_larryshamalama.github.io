@@ -1,6 +1,6 @@
 ---
 layout: about
-title: about
+title: About
 permalink: /
 description: Dalla Lana School of Public Health, University of Toronto
 

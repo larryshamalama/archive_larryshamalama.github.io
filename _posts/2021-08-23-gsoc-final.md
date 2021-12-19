@@ -8,9 +8,11 @@ description: The End of GSoC 2021
 This post effectively marks the end of my GSoC experience, but just the beginning of my project. As per the Work Submission Guidelines, detailed here are my contributions. The goal of my project is to build a submodule on Dirichlet Processes, a Bayesian nonparametric method for the estimation of probability distributions. I have worked on many aspects that would benefit the submodule, but no pull requests will be merged into the main branch by the end of the summer.
 
 ### 1 - Testing
+
 We spent a good portion of the summer discussing about testing for two reasons: (1) tests can serve as checks for my understanding of statistical theory and what I want my code to accomplish and (2) visual tests will ultimately turn into unit tests, which will be integrated in the CD/CI pipeline.
 
 ##### 1.A - Generating the right data
+
 Notebook: https://github.com/larryshamalama/pymc3-playground/blob/master/notebooks/step-by-step/test-multiple-dp-samples.ipynb.
 
 Dirichlet processes are specified by two things: a concentration parameter M and a base distribution G0. The first step was to design a visual test that can retrieve the concentration parameter. For instance, if we defined G0 to be $\mathcal{N}(5, 3^2)$, we can attempt to retrieve the mean of mu = 5 via the following test:
@@ -46,10 +48,7 @@ with pm.Model() as model:
 
 The notebook linked above combines both visual tests mentioned here. While it may seem redundant to obtain weights from betas and retrieve the latter back using stick_glueing, the two-level sampling below uses weights estimated using empirical frequencies of observed atoms. A preliminary first step was to get the tests here correct (which took me a while…).
 
-Precision Issues:
-Notebook:
-
-When generating weights, the data-generating code above is prone to fail
+However, when generating weights, the data-generating code above is prone to fail under small values of $$M$$. This is normal because the stick proportions that we break off are "bigger" and hence the remainder can easily fall below $$10^{-16}$$, which is were precision issues occur. See [this notebook](https://github.com/larryshamalama/pymc3-playground/blob/master/notebooks/shortcomings/replicate-precision-error.ipynb) in which I replicate this issue.
 
 ##### 1.B - Two-level sampling
 
@@ -64,4 +63,5 @@ Larger values of K and smaller values
 See work-in-progress PR here.
 
 ### Final Comments
+
 I am extremely grateful for this enriching opportunity and the support from my mentors Austin and Chris. Being a graduate student who’s primary goal is to understand statistical theory and do research, this experience has allowed me to strengthen my programming skills, but especially discover the plethora of opportunities in open source development. While my progress this summer was slow, I am confident that I will be able to get this submodule to work in the coming months.
