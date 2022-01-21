@@ -15,7 +15,7 @@ We spent a good portion of the summer discussing about testing for two reasons: 
 
 Notebook: https://github.com/larryshamalama/pymc3-playground/blob/master/notebooks/step-by-step/test-multiple-dp-samples.ipynb.
 
-Dirichlet processes are specified by two things: a concentration parameter M and a base distribution G0. The first step was to design a visual test that can retrieve the concentration parameter. For instance, if we defined G0 to be $\mathcal{N}(5, 3^2)$, we can attempt to retrieve the mean of mu = 5 via the following test:
+Dirichlet processes are specified by two things: a concentration parameter M and a base distribution G0. The first step was to design a visual test that can retrieve the concentration parameter. For instance, if we defined G0 to be $$\mathcal{N}(5, 3^2)$$, we can attempt to retrieve the mean of $$\mu = 5$$ via the following test:
 
 ```python
 mu = 5
@@ -32,7 +32,7 @@ with pm.Model() as model:
 _ = pm.plot_trace(trace)
 ```
 
-and, lastly, `trace.to_dict()["posterior"]["µ"].mean()` should evaluate to be close to 5. Inference on stick-breaking weights can be a tad more challenging, but it is still possible. Running the reverse stick-breaking function on weights that sum to 1, we can retrieve the concentration parameter as followed:
+and, lastly, `trace.to_dict()["posterior"]["µ"].mean()` should evaluate to be close to $$5$$. Inference on stick-breaking weights can be a tad more challenging, but it is still possible. Running the reverse stick-breaking function on weights that sum to 1, we can retrieve the concentration parameter as followed:
 
 ```python
 rng = np.random.RandomState(seed=34)
@@ -52,15 +52,15 @@ However, when generating weights, the data-generating code above is prone to fai
 
 ##### 1.B - Two-level sampling
 
-Large K, small N_dp
-No ordering
-Larger values of K and smaller values
+Samples from a Dirichlet Process are a distribution themselves. A ``two-level'' sampling approach to simulating data would be to sample from a Dirichlet Process a (discrete) distribution from which `N_dp` samples are sampled. Inference can then be performed on such samples, see progress in [this notebook](https://github.com/larryshamalama/pymc3-playground/blob/master/notebooks/progress/test-two-level-sampling.ipynb).
 
 ### 2 - Creating a StickBreakingWeights RandomVariable
 
+See ongoing progres in [this PR](https://github.com/pymc-devs/pymc/pull/5200).
+
 ### 3 - The DirichletProcess class: an ongoing effort…
 
-See work-in-progress PR here.
+See work-in-progress in [this PR](https://github.com/pymc-devs/pymc/pull/4809).
 
 ### Final Comments
 
