@@ -17,7 +17,7 @@ social: true  # includes social icons at the bottom of the page
 
 I am a second year PhD student in biostatistics at the Dalla Lana School of Public Health at the University of Toronto. My research interests primarily include dynamic treatment regimes (DTRs) and Bayesian methods and I am currently supervised by Dr. Olli Saarela and Dr. Eleanor Pullenayegum.
 
-Following my first year of PhD studies, I joined [PyMC](https://docs.pymc.io/en/stable/) as a Google Summer of Code student where I worked on developing a Dirichlet Process submodule. I am part of the [Health Data Working Group](https://health-data-working-group.github.io/) and, as of October 2021, I am also happy to serve as a GitHub Campus Expert.
+Following my first year of PhD studies, I joined [PyMC](https://docs.pymc.io/en/stable/) as a Google Summer of Code student where I worked on developing a Dirichlet Process submodule. I am part of the [Health Data Working Group](https://health-data-working-group.github.io/) and, as of October 2021, I am also happy to serve as a [GitHub Campus Expert](https://githubcampus.expert/larryshamalama/).
 
 Previously, I have pursued a dual Master's degree: one in biostatistics at McGill University and one in Public Health at the University of Bordeaux. I was jointly supervised by [Dr. Erica Moodie](https://www.ericamoodie.com/) and [Dr. Rodolphe Thiébaut](https://www.bordeaux-population-health.center/profile/rodolphe-thiebaut/), both of whom I look up to greatly and attribute a lot of my personal and professional growth.
 
