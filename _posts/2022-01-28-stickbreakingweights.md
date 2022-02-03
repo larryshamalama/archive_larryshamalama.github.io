@@ -40,7 +40,7 @@ $$G = \sum_{h=1}^K w_h \delta_{m_h} \, .$$
 
 From the same article, we have that the distribution of stick-breaking weights follows a generalized Dirichlet distribution, so that turns out to be the first step in implementing a submodule for DPs.
 
-### Distribution classes in PyMC
+### `RandomVariable` classes in PyMC/Aesara
 
 In PyMC, distributions are implemented as `Distribution` classes with `RandomVariable` instances `rv_op`. These `rv_op` have an `rng_fn` method that is able to generate samples from the prior distribution and it serves as the basis of `pm.sample_prior_predictive`.
 
@@ -105,7 +105,7 @@ class StickBreakingWeightsRV(RandomVariable):
 
 First, the distinction between `StickBreakingWeightsRV` and `StickBreakingWeights` is important as the latter is the one that will be used under a `pm.Model()` context manager. The `rng_fn` essentially follows the mathematical stick-breaking construction in that $$K$$ i.i.d. draws from a $$\text{Beta}(1, \alpha)$$ are used to construct $$w_1, \dots, w_{K}$$ with $$w_{K+1} = 1 - \sum_{\ell=1}^K w_\ell$$. An inherent challenge of this design is to abide by the existing OOP structure of the library since all the intricacies are not obvious. For instance, while `size` is used to specify the dimension of the observations that we want to sample (also in `StickBreakingWeights` below), we decided to provide the truncation parameter `K` as an explicit argument rather than include as part of `size` or `shape`.
 
-### The birth of a distribution class for (truncated) stick-breaking weights
+### A distribution class for (truncated) stick-breaking weights
 
 ```{python}
 class StickBreakingWeights(Continuous):
