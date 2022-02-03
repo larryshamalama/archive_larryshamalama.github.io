@@ -79,7 +79,7 @@ panelbear_analytics: XXXXXXXXX # panelbear analytics site ID
 # -----------------------------------------------------------------------------
 
 blog_name: Google Summer of Code 2021  # your blog must have a name for it to show up in the nav bar
-blog_description: Learning about Dirichlet processes and contributing to PyMC (This blog is under construction)
+blog_description: Around November 2021, while trying to build this blog, some blogposts have been deleted accidentally. Hopefully I can make up for that with more development on Dirichlet processes in PyMC!
 permalink: /gsoc2021/:title/
 
 # Pagination

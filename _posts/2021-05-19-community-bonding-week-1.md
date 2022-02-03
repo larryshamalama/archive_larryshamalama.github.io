@@ -9,15 +9,14 @@ The first year of my PhD studies had, in all honesty, some rather unexpected cha
 
 With summer right around the corner, I was eager for some good news and an opportunity to look forward to. On Monday, May 17 right before 2pm, I received the following email and nearly floored with happiness:
 
-<div class="row">
-    <div class="text-center">
-        <div class="col-sm mt-3 mt-md-0">
-            {% responsive_image path: assets/img/acceptance.png class: "img-fluid rounded z-depth-1" %}
-        </div>
+<div class="row justify-content-sm-center">
+    <div class="col-sm-8 mt-3 mt-md-0">
     </div>
-</div>
-<div class="caption">
-    My acceptance email to GSoC! 🎉
+    <div class="col-sm-8 mt-3 mt-md-0">
+        {% responsive_image path: assets/img/acceptance.png class: "img-fluid rounded mx-auto d-block" %}
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
 </div>
 
 and I immediately shared this amazing news with my parents and my friends. I am extremely grateful for the Google Summer of Code (GSoC) opportunity for the many reasons. Firstly, I will learn more about open source development and probabilistic programming from well-established mentors. Secondly, this practical opportunity would complement well my summer studying for my PhD comprehensive exams. Last but not least, I'm being paid! :sweat_smile:
