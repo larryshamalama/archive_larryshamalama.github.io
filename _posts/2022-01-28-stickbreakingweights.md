@@ -5,6 +5,8 @@ date: 2022-01-28 12:00:00-0400
 description: The first step to Dirichlet processes
 ---
 
+Link to pull request: https://github.com/pymc-devs/pymc/pull/5200
+
 After a long (two month) process, my PR on adding a distribution class has been merged! 🙂 The whole process of taking the initiative to contribute to PyMC was rewarding, but definitely not easy. A small comment that, upon cleaning my computer, many of my 2021 GSoC posts have been deleted (I also happened to be in the process of reformatting my website), so this is why my 2021 summer blog may seem kind of empty...
 
 ### Revisiting Dirichlet Processes
@@ -202,7 +204,7 @@ $$\mathbb{E}\left[w_h\right] = \frac{1}{1 + \alpha}\left(\frac{\alpha}{1 + \alph
 
 for all $$h = 1, \dots, K$$ and $$\mathbb{E}\left[w_{K+1}\right] = \left(\frac{\alpha}{1 + \alpha}\right)^{K}$$.
 
-- `logp`: While it may seem naive, this is the most important method as this is exactly what allows `pm.sample()` to do its magic. Here, I provide the log distribution of a generalized Dirichlet distribution with $$b_h = 1$$ and $a_h = \alpha$ for all $$h$$ with respect to the density provided in the [Wiki article](https://en.wikipedia.org/wiki/Generalized_Dirichlet_distribution). Note that we assume that `value` can be of any dimension. Everything else in the method (what's in `at.switch` and `check_parameters`) are to ensure that inputs and parameters are all valid with respect to the distribution's constraints; errors would be raised if we provided something like `alpha = -2`, for instance.
+- `logp`: While it may seem naive, this is the most important method as this is exactly what allows `pm.sample()` to do its magic. Here, I provide the log distribution of a generalized Dirichlet distribution with $$b_h = 1$$ and $$a_h = \alpha$$ for all $$h$$ with respect to the density provided in the [Wiki article](https://en.wikipedia.org/wiki/Generalized_Dirichlet_distribution). Note that we assume that `value` can be of any dimension. Everything else in the method (what's in `at.switch` and `check_parameters`) are to ensure that inputs and parameters are all valid with respect to the distribution's constraints; errors would be raised if we provided something like `alpha = -2`, for instance.
 
 A small comment that I added unit tests regarding this distribution: testing shapes, `logp`, `rng_fn` and their extensions to multidimensional samples. I do not talk about them here, but unit tests are quite important and, given that I didn't know what they were before, it was an interesting learning experience.
 
