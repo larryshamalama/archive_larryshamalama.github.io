@@ -5,7 +5,7 @@ date: 2022-01-28 12:00:00-0400
 description: The first step to Dirichlet processes
 ---
 
-Link to pull request: https://github.com/pymc-devs/pymc/pull/5200
+Link to pull request: [https://github.com/pymc-devs/pymc/pull/5200](https://github.com/pymc-devs/pymc/pull/5200)
 
 After a long (two month) process, my PR on adding a distribution class has been merged! 🙂 The whole process of taking the initiative to contribute to PyMC was rewarding, but definitely not easy. A small comment that, upon cleaning my computer, many of my 2021 GSoC posts have been deleted (I also happened to be in the process of reformatting my website), so this is why my 2021 summer blog may seem kind of empty...
 
@@ -32,7 +32,7 @@ where $$\alpha > 0$$ is the concentration parameter and $$G_0$$ is some base dis
 
 It can be initially difficult to understand why such a construction is useful, let alone nonparametric, but the idea is as followed. In Bayesian inference, we wish to perform inference by conditioning on observed data and looking at the posterior distribution of parameters of interest. However, by positing a DP prior on $$G$$, we can effectively perform inference on the distribution $$G$$ *without* positing any distributional assumption, hence rendering this construction nonparametric despite the need to specify $$G_0$$. It is already worth mentioning that a DP prior poses some "strong" restrictions, so a more common application of DPs are to posit them as priors in mixture modelling, but more on that at a later date...
 
-When it comes to sampling, there are many schemas with desirable properties that provide nice (conditional)posterior distributions (see Chinese Restaurant Process and Polya Urn). However, an inherent challenge to build a DP functionality to PyMC is to leverage its default sampling methods which are primarily gradient-based, i.e. Hamiltonian Monte Carlo (HMC) or some of its extensions if I remember correctly. As such, the most useful construction of a DP is to represent it as an infinite linear combination of weights obtained via a stick-breaking process and atoms, represented as Dirac delta distributions:
+When it comes to sampling, there are many schemas with desirable properties that provide nice (conditional)posterior distributions (see [Chinese Restaurant Process](https://en.wikipedia.org/wiki/Chinese_restaurant_process) and [Polya Urn](https://en.wikipedia.org/wiki/P%C3%B3lya_urn_model)). However, an inherent challenge to build a DP functionality to PyMC is to leverage its default sampling methods which are primarily gradient-based, i.e. Hamiltonian Monte Carlo (HMC) or some of its extensions if I remember correctly. As such, the most useful construction of a DP is to represent it as an infinite linear combination of weights obtained via a stick-breaking process and atoms, represented as Dirac delta distributions:
 
 $$G = \sum_{h=1}^\infty w_h \delta_{m_h}$$
 
@@ -46,7 +46,7 @@ From the same article, we have that the distribution of stick-breaking weights f
 
 In PyMC, distributions are implemented as `Distribution` classes with `RandomVariable` instances `rv_op`. These `rv_op` have an `rng_fn` method that is able to generate samples from the prior distribution and it serves as the basis of `pm.sample_prior_predictive`.
 
-```{python}
+```python
 class StickBreakingWeightsRV(RandomVariable):
     name = "stick_breaking_weights"
     ndim_supp = 1
@@ -109,7 +109,7 @@ First, the distinction between `StickBreakingWeightsRV` and `StickBreakingWeight
 
 ### A distribution class for (truncated) stick-breaking weights
 
-```{python}
+```python
 class StickBreakingWeights(Continuous):
     # rv_op instance defined as: stickbreakingweights = StickBreakingWeights()
     rv_op = stickbreakingweights
