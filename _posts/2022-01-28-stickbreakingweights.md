@@ -218,8 +218,8 @@ The next steps are to properly simulate data from a DP to better understand how 
 
 Firstly, a big thanks to you for reading this post! While this was a nice exercise for myself, it's nice to have people read on my work (and comment on it if you want!). I am proud to have coded everything, but none of this was possible without the help of these amazing people, who were always there to share their ideas and comments about my code:
 
-- [Ricardo Vieira](https://github.com/ricardoV94/)
 - [Austin Rochford](https://austinrochford.com/)
 - [Chris Fonnesbeck](https://twitter.com/fonnesbeck)
+- [Ricardo Vieira](https://github.com/ricardoV94/)
 
 Last but not least, a big thanks to the entire PyMC community for answering all my questions and all their ongoing efforts, whether they are noticeable or not 🚀
