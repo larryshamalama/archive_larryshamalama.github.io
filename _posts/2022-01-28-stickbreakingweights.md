@@ -7,7 +7,7 @@ description: The first step to Dirichlet processes
 
 Link to pull request: [https://github.com/pymc-devs/pymc/pull/5200](https://github.com/pymc-devs/pymc/pull/5200)
 
-After a long (two month) process, my PR on adding a distribution class has been merged! 🙂 The whole process of taking the initiative to contribute to PyMC was rewarding, but definitely not easy. A small comment that, upon cleaning my computer, many of my 2021 GSoC posts have been deleted (I also happened to be in the process of reformatting my website), so this is why my 2021 summer blog may seem kind of empty...
+After a long (two month) process, my PR on adding a distribution class has been merged! 🙂 The whole process of taking the initiative to contribute to PyMC was rewarding, but definitely not easy.
 
 ### Revisiting Dirichlet Processes
 

@@ -5,6 +5,8 @@ date: 2021-08-23 12:00:00-0400
 description: The End of GSoC 2021
 ---
 
+Edit (February 7, 2022): A small comment that, upon cleaning my computer, many of my 2021 GSoC posts have been deleted (I also happened to be in the process of reformatting my website), so this is why my 2021 summer blog and this work submission may seem kind of empty...
+
 This post effectively marks the end of my GSoC experience, but just the beginning of my project. As per the Work Submission Guidelines, detailed here are my contributions. The goal of my project is to build a submodule on Dirichlet Processes, a Bayesian nonparametric method for the estimation of probability distributions. I have worked on many aspects that would benefit the submodule, but no pull requests will be merged into the main branch by the end of the summer.
 
 ### 1 - Testing
