@@ -1,3 +1,9 @@
+### Hi! Welcome to my website repository 
+
+I am using the al-folio template for my personal website. Below are the details of the template!
+
+A comment for myself is that past project templates are available in `_projects` in the following [commit](https://github.com/larryshamalama/larryshamalama.github.io/commit/6c41ade20824ec3a5eee538cf557f0b89b0cc3f9).
+
 # al-folio
 
 [![build status](https://travis-ci.org/alshedivat/al-folio.svg?branch=master)](https://travis-ci.org/alshedivat/al-folio)

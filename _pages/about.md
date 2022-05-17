@@ -21,4 +21,4 @@ Following my first year of PhD studies, I joined [PyMC](https://docs.pymc.io/en/
 
 Previously, I have pursued a dual Master's degree: one in biostatistics at McGill University and one in Public Health at the University of Bordeaux. I was jointly supervised by [Dr. Erica Moodie](https://www.ericamoodie.com/) and [Dr. Rodolphe Thiébaut](https://www.bordeaux-population-health.center/profile/rodolphe-thiebaut/), both of whom I look up to greatly and attribute a lot of my personal and professional growth.
 
-I also enjoy coding in Python, skateboarding and eating copious amounts of fruit (especially grapes, bananas, oranges and watermelon). Feel free to connect with me!
+I also enjoy coding in Python, skateboarding and eating copious amounts of fruit (especially grapes, bananas, oranges and watermelon). Feel free to connect with me! Tu peux aussi m'écrire en français :)

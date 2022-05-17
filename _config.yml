@@ -78,9 +78,9 @@ panelbear_analytics: XXXXXXXXX # panelbear analytics site ID
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: Google Summer of Code 2021  # your blog must have a name for it to show up in the nav bar
-blog_description: Around November 2021, while trying to build this blog, some blogposts have been deleted accidentally. Hopefully I can make up for that with more development on Dirichlet processes in PyMC!
-permalink: /gsoc2021/:title/
+blog_name: Google Summer of Code  # your blog must have a name for it to show up in the nav bar
+blog_description:
+permalink: /gsoc/:title/
 
 # Pagination
 pagination:
@@ -172,9 +172,9 @@ jekyll-archives:
     tag: archive-tag
     category: archive-category
   permalinks:
-    year: '/gsoc2021/:year/'
-    tag: '/gsoc2021/tag/:name/'
-    category: '/gsoc2021/category/:name/'
+    year: '/gsoc/:year/'
+    tag: '/gsoc/tag/:name/'
+    category: '/gsoc/category/:name/'
 
 # -----------------------------------------------------------------------------
 # Jekyll Scholar
