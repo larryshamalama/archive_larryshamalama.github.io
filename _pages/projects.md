@@ -1,8 +1,8 @@
 ---
 layout: page
-title: projects
-permalink: /projects/
-description: Here are some posts on many miscellaneous projects and thoughts that are somehow co-existing
+title: posts
+permalink: /posts/
+description: Here are some miscellaneous posts that I write every now and then
 nav: true
 horizontal: false
 ---
