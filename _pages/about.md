@@ -6,9 +6,9 @@ description: Dalla Lana School of Public Health, University of Toronto
 
 profile:
   align: right
-  image: larry-school.jpeg
+  image: larry-parc.jpg
   address: >
-    <p>2nd Year Biostatistics PhD Student @ DLSPH</p>
+    <p>3rd Year Biostatistics PhD Student @ DLSPH</p>
 
 news: false  # includes a list of news items
 selected_papers: false # includes a list of papers marked as "selected={true}"
