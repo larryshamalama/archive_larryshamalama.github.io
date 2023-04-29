@@ -2,13 +2,13 @@
 layout: about
 title: About
 permalink: /
-description: Dalla Lana School of Public Health, University of Toronto
+description:
 
 profile:
   align: right
   image: larry-parc.jpg
   address: >
-    <p>3rd Year Biostatistics PhD Student @ DLSPH</p>
+    <p>Biostatistics PhD Student @ DLSPH</p>
 
 news: false  # includes a list of news items
 selected_papers: false # includes a list of papers marked as "selected={true}"
