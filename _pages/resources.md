@@ -24,5 +24,8 @@ Here is a working list of (mostly academic) awards, competitions and/or opportun
         <li>
             <a href="https://datasciences.utoronto.ca/suds-internship-opportunities/">DSI</a>. Open to full-time undergraduate students at a Canadian institution. Positions for the 2023 (last year's) were posted on December 19, 2023.
         </li>
+        <li>
+            <a href="https://www.projects.tuebingen.mpg.de/">CaCTüS Internship</a>. Open to undergraduate students having completed at least 4 semesters of studies or Master's students. Deadline to apply: December 4, 2023.
+        </li>
     </ol>
 </div>
