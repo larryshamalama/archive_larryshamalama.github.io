@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://larryshamalama.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://larryshamalama.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-11-27T16:31:58+00:00</updated><id>https://larryshamalama.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
+</subtitle><entry><title type="html">GSoC 2022 Work Product Submission</title><link href="https://larryshamalama.github.io/gsoc/gsoc-2-final-submission/" rel="alternate" type="text/html" title="GSoC 2022 Work Product Submission" /><published>2022-09-10T16:00:00+00:00</published><updated>2022-09-10T16:00:00+00:00</updated><id>https://larryshamalama.github.io/gsoc/gsoc-2-final-submission</id><content type="html" xml:base="https://larryshamalama.github.io/gsoc/gsoc-2-final-submission/"><![CDATA[<p>As part of my final work product submission, I summarize here what I have worked on and the progress on certain tasks: done, ongoing and for the future. While I have yet to address the issue of multivariate mixtures (AePPL <a href="https://github.com/aesara-devs/aeppl/issues/106">issue 106</a>), I would say that I accomplished a very important goal of mine which was to learn more about Aesara and AePPL.</p>
+
+<h3 id="graph-rewrite-for-switch-mixture-sub-graph-done-ish"><strong>Graph rewrite for <code class="language-plaintext highlighter-rouge">Switch</code> mixture sub-graph [DONE-ish]</strong></h3>
+
+<p>A <code class="language-plaintext highlighter-rouge">Switch</code> takes three arguments: an index and two components. Akin to a <code class="language-plaintext highlighter-rouge">at.stack</code> that is being indexed, a <code class="language-plaintext highlighter-rouge">Switch</code> can be viewed as a mixture, where both components are measurable and we wish to obtain the log-probability of the component that is being indexed. Here is a working example:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">aesara.tensor</span> <span class="k">as</span> <span class="n">at</span>
+<span class="kn">from</span> <span class="n">aeppl</span> <span class="kn">import</span> <span class="n">joint_logprob</span>
+
+<span class="n">srng</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nc">RandomStream</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">2320</span><span class="p">)</span>
+
+<span class="n">I_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">bernoulli</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">I</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X1_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X1</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X2_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X2</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">Z_rv</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">switch</span><span class="p">(</span><span class="n">I_rv</span><span class="p">,</span> <span class="n">X1_rv</span><span class="p">,</span> <span class="n">X2_rv</span><span class="p">)</span>
+
+<span class="n">z_vv</span> <span class="o">=</span> <span class="n">Z1_rv</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+<span class="n">i_vv</span> <span class="o">=</span> <span class="n">I_rv</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+
+<span class="n">logp</span> <span class="o">=</span> <span class="nf">joint_logprob</span><span class="p">({</span><span class="n">Z_rv</span><span class="p">:</span> <span class="n">z_vv</span><span class="p">,</span> <span class="n">I_rv</span><span class="p">:</span> <span class="n">i_vv</span><span class="p">})</span>
+<span class="n">logp</span><span class="p">.</span><span class="nf">eval</span><span class="p">({</span><span class="n">z_vv</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">i_vv</span><span class="p">:</span> <span class="mi">0</span><span class="p">}),</span> <span class="n">logp</span><span class="p">.</span><span class="nf">eval</span><span class="p">({</span><span class="n">z_vv</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">i_vv</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="c1"># yields (array(-4999.30950062), array(0.69049938))
+</span></code></pre></div></div>
+
+<p>For more detailed information, I wrote a blogpost as part of my GSoC program <a href="https://larrydong.com/gsoc/gsoc-2-part-2/">here</a>.</p>
+
+<h3 id="custom-python-metaclass-for-dynamic-type-creation-of-unmeasurable-ops-done"><strong>Custom Python metaclass for dynamic type creation of unmeasurable <code class="language-plaintext highlighter-rouge">Op</code>s [DONE]</strong></h3>
+
+<p>See <a href="https://github.com/aesara-devs/aeppl/pull/158">AePPL PR</a> and <a href="https://larrydong.com/posts/2022-08-02-metaclass/">this blogpost</a> for more detail about this PR. Frankly, this was my contribution that I was most proud of. Copying a working example from the blogpost, below is an example of how dynamically created classes can be equal up to their hash value but are not inherently the same class object.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">aesara.tensor</span> <span class="k">as</span> <span class="n">at</span>
+
+<span class="n">X_rv</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">Y_rv</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">Y</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="nf">hash</span><span class="p">(</span><span class="n">unmeasurable_X</span><span class="p">)</span> <span class="o">==</span> <span class="nf">hash</span><span class="p">(</span><span class="n">unmeasurable_Y</span><span class="p">)</span> <span class="c1"># True: 4967640381975027986 == 4967640381975027986
+</span><span class="nf">id</span><span class="p">(</span><span class="n">unmeasurable_X</span><span class="p">)</span> <span class="o">==</span> <span class="nf">id</span><span class="p">(</span><span class="n">unmeasurable_Y</span><span class="p">)</span> <span class="c1"># False: 6044493248 == 6044530000
+</span>
+<span class="n">unmeasurable_X</span> <span class="o">=</span> <span class="nf">assign_custom_measurable_outputs</span><span class="p">(</span><span class="n">X_rv</span><span class="p">.</span><span class="n">owner</span><span class="p">).</span><span class="n">op</span>
+<span class="n">unmeasurable_Y</span> <span class="o">=</span> <span class="nf">assign_custom_measurable_outputs</span><span class="p">(</span><span class="n">Y_rv</span><span class="p">.</span><span class="n">owner</span><span class="p">).</span><span class="n">op</span>
+
+<span class="nf">hash</span><span class="p">(</span><span class="n">unmeasurable_X</span><span class="p">)</span> <span class="o">==</span> <span class="nf">hash</span><span class="p">(</span><span class="n">unmeasurable_Y</span><span class="p">)</span> <span class="c1"># True
+</span><span class="nf">id</span><span class="p">(</span><span class="n">unmeasurable_X</span><span class="p">)</span> <span class="o">==</span> <span class="nf">id</span><span class="p">(</span><span class="n">unmeasurable_Y</span><span class="p">)</span> <span class="c1"># False
+</span>
+<span class="n">unmeasurable_X</span> <span class="o">==</span> <span class="n">unmeasurable_Y</span> <span class="c1"># True, same hashes
+</span><span class="n">unmeasurable_X</span> <span class="ow">is</span> <span class="n">unmeasurable_Y</span> <span class="c1"># False, different ids
+</span></code></pre></div></div>
+
+<h3 id="graph-rewrite-for-ifelse-mixture-sub-graphs-in-progress"><strong>Graph rewrite for <code class="language-plaintext highlighter-rouge">IfElse</code> mixture sub-graphs [IN PROGRESS]</strong></h3>
+
+<p>See <a href="https://github.com/aesara-devs/aeppl/pull/169">PR 169</a> of AePPL. Akin to the <code class="language-plaintext highlighter-rouge">Switch</code> working example, the <code class="language-plaintext highlighter-rouge">IfElse</code> <code class="language-plaintext highlighter-rouge">Op</code> takes the same three inputs: an binary condition and two components. A similar log-probability graph can be retrieved as with the <code class="language-plaintext highlighter-rouge">Switch</code> example above.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">aesara.tensor</span> <span class="k">as</span> <span class="n">at</span>
+<span class="kn">from</span> <span class="n">aeppl</span> <span class="kn">import</span> <span class="n">joint_logprob</span>
+
+<span class="n">srng</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nc">RandomStream</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">2320</span><span class="p">)</span>
+
+<span class="n">I_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">bernoulli</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">I</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X1_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X1</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X2_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X2</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">Z_rv</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="n">ifelse</span><span class="p">.</span><span class="nf">ifelse</span><span class="p">(</span><span class="n">I_rv</span><span class="p">,</span> <span class="n">X1_rv</span><span class="p">,</span> <span class="n">X2_rv</span><span class="p">)</span>
+
+<span class="n">z_vv</span> <span class="o">=</span> <span class="n">Z1_rv</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+<span class="n">i_vv</span> <span class="o">=</span> <span class="n">I_rv</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+
+<span class="n">logp</span> <span class="o">=</span> <span class="nf">joint_logprob</span><span class="p">({</span><span class="n">Z_rv</span><span class="p">:</span> <span class="n">z_vv</span><span class="p">,</span> <span class="n">I_rv</span><span class="p">:</span> <span class="n">i_vv</span><span class="p">})</span>
+<span class="n">logp</span><span class="p">.</span><span class="nf">eval</span><span class="p">({</span><span class="n">z_vv</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">i_vv</span><span class="p">:</span> <span class="mi">0</span><span class="p">}),</span> <span class="n">logp</span><span class="p">.</span><span class="nf">eval</span><span class="p">({</span><span class="n">z_vv</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">i_vv</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="c1"># yields (array(-4999.30950062), array(0.69049938))
+</span></code></pre></div></div>
+
+<h3 id="dirichlet-process-mixtures-in-pymc-experimental-in-progress"><strong>Dirichlet Process Mixtures in PyMC Experimental [IN PROGRESS]</strong></h3>
+
+<p>See <a href="https://github.com/pymc-devs/pymc-experimental/pull/66">WIP PR 66</a>.</p>
+
+<h3 id="bug-fixes"><strong>Bug Fixes</strong></h3>
+
+<ul>
+  <li>Bug fix in Graphviz submodule (PyMC <a href="https://github.com/pymc-devs/pymc/pull/6011">PR 6011</a>)</li>
+  <li>Fix <code class="language-plaintext highlighter-rouge">pm.Interpolated</code> moment (PyMC <a href="https://github.com/pymc-devs/pymc/pull/5986">PR 5986</a>)</li>
+</ul>
+
+<p>I started an attempt to refactor the Latex representation for SymbolicDistributions (PyMC <a href="https://github.com/pymc-devs/pymc/pull/5793">PR 5793</a>) and incorporating AePPL’s <code class="language-plaintext highlighter-rouge">Cumsum</code> dispatch for the <code class="language-plaintext highlighter-rouge">GaussianRandomWalk</code> distribution (PyMC <a href="https://github.com/pymc-devs/pymc/pull/5814">PR 5814</a>), but they were superceeded by an amazing PR that completely refactored <a href="https://github.com/pymc-devs/pymc/pull/6072"><code class="language-plaintext highlighter-rouge">SymbolicDistribution</code>s</a>.</p>
+
+<h3 id="future-work"><strong>Future work</strong></h3>
+
+<ul>
+  <li>Implement multivariate mixture models, particularly for mixture sub-graphs constructed via the <code class="language-plaintext highlighter-rouge">MakeVector</code> or <code class="language-plaintext highlighter-rouge">Join</code> <code class="language-plaintext highlighter-rouge">Op</code> as mentioned above.</li>
+  <li>Check how <code class="language-plaintext highlighter-rouge">SymbolicDistribution</code>s show up in Graphviz. With the newly refactored <code class="language-plaintext highlighter-rouge">SymbolicRV</code>, chances are that they show up well, but it would be worth checking the <code class="language-plaintext highlighter-rouge">model_graph.py</code> file for any inconsistencies (r.f. PyMC issues <a href="https://github.com/pymc-devs/pymc/issues/5303">5303</a> and <a href="https://github.com/pymc-devs/pymc/issues/5766">5766</a>).</li>
+  <li>Allow exclusion of model sub-graphs via “~” in front of variable names (PyMC <a href="https://github.com/pymc-devs/pymc/issues/5794">issue 5794</a>).</li>
+</ul>
+
+<h3 id="thanks"><strong>Thanks</strong></h3>
+
+<p>Last but not least, I want to give my sincerest thanks to my mentors Brandon and Ricardo. They were patient and very helpful in guiding me through AePPL’s sourcecode and the conceptual design of the codebase. However, I am most grateful for their mentorship. Thanks for everything.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[The end of another summer of code]]></summary></entry><entry><title type="html">AePPL `Switch`-defined mixtures</title><link href="https://larryshamalama.github.io/gsoc/gsoc-2-part-2/" rel="alternate" type="text/html" title="AePPL `Switch`-defined mixtures" /><published>2022-08-02T16:00:00+00:00</published><updated>2022-08-02T16:00:00+00:00</updated><id>https://larryshamalama.github.io/gsoc/gsoc-2-part-2</id><content type="html" xml:base="https://larryshamalama.github.io/gsoc/gsoc-2-part-2/"><![CDATA[<p>Lately, I have been trying to work on issues 76 and 77 of AePPL in which we would like to extend the library’s mixture functionality. See <a href="https://github.com/aesara-devs/aeppl/pull/154">PR 154 in AePPL</a>.</p>
+
+<h2 id="mixture-modelling-in-aeppl">Mixture modelling in AePPL</h2>
+
+<p>The overarching goal of AePPL is to retrieve correct log-probability functions of data-generating models. Diving a little bit more into the details, every data-generating model induces a hierarchical graph which can be build using Aesara’s symbolic mathematics toolbox. For instance, in <a href="https://github.com/aesara-devs/aeppl/pull/19">PR 19</a>, mixture models constructed via <code class="language-plaintext highlighter-rouge">at.stack</code> or <code class="language-plaintext highlighter-rouge">at.join</code> are currently supported:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">aesara.tensor</span> <span class="k">as</span> <span class="n">at</span>
+<span class="kn">from</span> <span class="n">aeppl</span> <span class="kn">import</span> <span class="n">joint_logprob</span>
+
+<span class="n">srng</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nc">RandomStream</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">2320</span><span class="p">)</span>
+
+<span class="n">I_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">bernoulli</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">I</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X1_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X1</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X2_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X2</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">Z1_rv</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">stack</span><span class="p">([</span><span class="n">X1_rv</span><span class="p">,</span> <span class="n">X2_rv</span><span class="p">])[</span><span class="n">I_rv</span><span class="p">]</span>
+
+<span class="n">z_vv</span> <span class="o">=</span> <span class="n">Z1_rv</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+<span class="n">i_vv</span> <span class="o">=</span> <span class="n">I_rv</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+
+<span class="n">logp</span> <span class="o">=</span> <span class="nf">joint_logprob</span><span class="p">({</span><span class="n">Z1_rv</span><span class="p">:</span> <span class="n">z1_vv</span><span class="p">,</span> <span class="n">I_rv</span><span class="p">:</span> <span class="n">i_vv</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p>Effectively, we can only retrieve the log-probability of the appropriate mixture component if provided numerical values for value variables <code class="language-plaintext highlighter-rouge">z_vv</code> and <code class="language-plaintext highlighter-rouge">i_vv</code>. These log-probabilities are <strong>unmarginalized</strong>, that is that AePPL retrieves the log-probability of <code class="language-plaintext highlighter-rouge">X1_rv</code> or <code class="language-plaintext highlighter-rouge">X2_rv</code> at the value <code class="language-plaintext highlighter-rouge">z_vv</code> depending on the index <code class="language-plaintext highlighter-rouge">i_vv</code>.</p>
+
+<h2 id="switch-mixtures"><code class="language-plaintext highlighter-rouge">Switch</code> mixtures</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">Switch</code> <code class="language-plaintext highlighter-rouge">Op</code> is an operator that take in three arguments: the index variable and both components of the mixture model. The index variable served as if the components were in an <code class="language-plaintext highlighter-rouge">ifelse</code> condition. With a condition that is a dichotomous random variable and both branches that are stochastic as well, i.e. <code class="language-plaintext highlighter-rouge">MeasurableVariable</code>s, this <code class="language-plaintext highlighter-rouge">Switch</code> subgraph would be a mixture model and can be replaced by a <code class="language-plaintext highlighter-rouge">MixtureRV</code> node. Thanks to the indexing functionality provided in <a href="https://github.com/aesara-devs/aeppl/blob/main/aeppl/mixture.py#L43"><code class="language-plaintext highlighter-rouge">expand_indices</code></a> that imitates NumPy’s advanced indexing logic, adding a graph rewrite for <code class="language-plaintext highlighter-rouge">switch</code> and <code class="language-plaintext highlighter-rouge">ifelse</code> mixtures is not very difficult.</p>
+
+<h4 id="univariate-components">Univariate components</h4>
+
+<p>Using the same <code class="language-plaintext highlighter-rouge">I_rv</code>, <code class="language-plaintext highlighter-rouge">X1_rv</code>, <code class="language-plaintext highlighter-rouge">X2_rv</code> and corresponding value variables defined above, a <code class="language-plaintext highlighter-rouge">Switch</code> mixture can be defined as followed:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">srng</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nc">RandomStream</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">2320</span><span class="p">)</span>
+
+<span class="n">I_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">bernoulli</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">I</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X1_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X1</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X2_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X2</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">Z2_rv</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">switch</span><span class="p">(</span><span class="n">I_rv</span><span class="p">,</span> <span class="n">X1_rv</span><span class="p">,</span> <span class="n">X2_rv</span><span class="p">)</span>
+
+<span class="n">z_vv</span> <span class="o">=</span> <span class="n">Z1_rv</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+<span class="n">i_vv</span> <span class="o">=</span> <span class="n">I_rv</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+
+<span class="n">logp</span> <span class="o">=</span> <span class="nf">joint_logprob</span><span class="p">({</span><span class="n">Z2_rv</span><span class="p">:</span> <span class="n">z_vv</span><span class="p">,</span> <span class="n">I_rv</span><span class="p">:</span> <span class="n">i_vv</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p>In AePPL, graphs rewrites via the <code class="language-plaintext highlighter-rouge">node_rewriter</code> decorator (previously known as <code class="language-plaintext highlighter-rouge">local_optimizer</code> since <a href="https://github.com/aesara-devs/aesara/pull/1054">PR 1054 of Aesara</a> to identify <code class="language-plaintext highlighter-rouge">Elemwise</code> nodes whose scalar operator is a <code class="language-plaintext highlighter-rouge">Switch</code>. Here, <code class="language-plaintext highlighter-rouge">I_rv</code>, <code class="language-plaintext highlighter-rouge">X1_rv</code> and <code class="language-plaintext highlighter-rouge">X2_rv</code> are not provided any fancy <code class="language-plaintext highlighter-rouge">size</code> arguments, so no indexing operations need to be involved.</p>
+
+<h4 id="multi-dimensional-inputs">Multi-dimensional inputs</h4>
+
+<p>For <code class="language-plaintext highlighter-rouge">Switch</code>es, both indices and components can be non-scalars. However, for <code class="language-plaintext highlighter-rouge">IfElse</code> mixtures whose logic is <em>very</em> similar, conditions/indices can only be scalar-valued. The identification of which elements in the two inputs as components are selected via indexing is non-trivial; I refer to the following NumPy examples as to what AePPL/Aesara is expected to yield. In the end, the AePPL mixture logic for subgraphs defined by <code class="language-plaintext highlighter-rouge">MakeVector</code> and <code class="language-plaintext highlighter-rouge">Join</code>, <code class="language-plaintext highlighter-rouge">Op</code>s that combine two tensors, need to align with the <code class="language-plaintext highlighter-rouge">Switch</code>/<code class="language-plaintext highlighter-rouge">ifelse</code> correspondant indexing operation.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">comp1</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">).</span><span class="nf">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">comp2</span> <span class="o">=</span> <span class="o">-</span><span class="n">comp1</span>
+
+<span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="n">comp1</span><span class="p">,</span>
+    <span class="n">comp2</span>
+<span class="p">)</span>
+<span class="c1"># array([[ -1,   2,  -3,  -4],
+#        [ -5,   6,  -7,  -8],
+#        [ -9,  10, -11, -12]])
+</span></code></pre></div></div>
+
+<p>The example above illustrates the expected behaviour when the index is a vector and components a 2D matrix. These should work with arbitrarily defined arrays.</p>
+
+<h2 id="future-work">Future Work</h2>
+
+<p>Future work entails:</p>
+
+<ul>
+  <li>As of now, finish the <code class="language-plaintext highlighter-rouge">IfElse</code> mixture subgraph PRs.</li>
+  <li>Extend <code class="language-plaintext highlighter-rouge">MixtureRV</code>s defined by <code class="language-plaintext highlighter-rouge">at.stack</code>s to retrieve their appropriate log-likelihood.</li>
+  <li>Continue work on (Truncated) Dirichlet Processes for our experimental package (<code class="language-plaintext highlighter-rouge">pymc-experimental</code>), but that’s taken a halt in progress…</li>
+</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[Maybe a new functionality to AePPL `Switches` would be to play multiplayer games on it 🤔]]></summary></entry><entry><title type="html">GSoC 2022 - Part 1</title><link href="https://larryshamalama.github.io/gsoc/gsoc-2-part-1/" rel="alternate" type="text/html" title="GSoC 2022 - Part 1" /><published>2022-06-29T16:00:00+00:00</published><updated>2022-06-29T16:00:00+00:00</updated><id>https://larryshamalama.github.io/gsoc/gsoc-2-part-1</id><content type="html" xml:base="https://larryshamalama.github.io/gsoc/gsoc-2-part-1/"><![CDATA[<p>Following my first GSoC, I had such a great experience with the PyMC community that I decided to undertake a second summer of code!</p>
+
+<h2 id="my-project"><strong>My Project</strong></h2>
+
+<p>Last year, my project entailed adding a Dirichlet Process (DP) submodule to PyMC. It’s still a work-in-progress, but hopefully I will have something working by the end of the summer in <a href="https://github.com/pymc-devs/pymc-experimental">PyMC experimental</a>! In January, I was able to merge a distribution classes for weights obtained via a stick-breaking process; you can read about the process in <a href="https://larrydong.com/gsoc/stickbreakingweights/">this blogpost</a>.</p>
+
+<p>A major focal point of my 2022 GSoC project revolves around improving AePPL’s functionality for mixture models. Notably, I aim to address the following issues:</p>
+
+<ul>
+  <li><a href="https://github.com/aesara-devs/aeppl/issues/77">Support mixture graphs defined by <code class="language-plaintext highlighter-rouge">switch</code></a>;</li>
+  <li><a href="https://github.com/aesara-devs/aeppl/issues/76">Support mixture graphs defined by <code class="language-plaintext highlighter-rouge">ifelse</code></a>;</li>
+  <li><a href="https://github.com/aesara-devs/aeppl/issues/106">Extend mixture functionality for multivariate components</a>.</li>
+</ul>
+
+<p>Following my first summer, I decided that it would be good to further invest time diving into a codebase where I know that I need to help to understand. Given that I needed a break from my PhD studies, this time investment into a theoretically challenging project was something that appealed to me but also a good investment for the longer-term, both on a personal and professional level. Aesara, the computational backend to PyMC, is not an easy package to wrap one’s head around; its use is non-trivial and its codebase daunting. On top of that, AePPL provides the log-probability of random graphs written in Aesara and the delineation in package differences is not obvious. As my first blogpost for this summer’s GSoC, it would be good to talk a bit about Aesara and AePPL.</p>
+
+<h2 id="aesara-101"><strong>Aesara 101</strong></h2>
+
+<p>The best description is the one taken straight from the GitHub repository and Read the Docs: “Aesara is a Python library that allows you to define, optimize, and evaluate mathematical expressions involving multi-dimensional arrays efficiently.” Effectively, Aesara allows users to define mathematical expressions via graph-like structures. A more commonly used tool that permits similar symbolic computation functionalities is the very famous and expensive MATLAB.</p>
+
+<h4 id="defining-expressions"><strong>Defining Expressions</strong></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">aesara</span>
+<span class="kn">from</span> <span class="n">aesara</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">at</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">dscalar</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">dscalar</span><span class="p">()</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</code></pre></div></div>
+
+<p>The example above was taken straight from the frontpage of Aesara. Here, <code class="language-plaintext highlighter-rouge">x</code>, <code class="language-plaintext highlighter-rouge">y</code> and <code class="language-plaintext highlighter-rouge">z</code> are tensor variables of type <code class="language-plaintext highlighter-rouge">TensorVariable</code> which do not have a value associated. In Aesara, such mathematical expressions have a corresponding graph; in order to produce any meaningful numerical computation that humans would understand, we would have to <em>compile</em> the graphs, often optimize them and then feed values. A little more on the optimization of graphs in a few scrolls.</p>
+
+<h4 id="evaluating-expressions"><strong>Evaluating Expressions</strong></h4>
+
+<p>Any variable in Aesara can be evaluated by calling <code class="language-plaintext highlighter-rouge">.eval()</code> but with provided appropriate inputs.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">z</span><span class="p">.</span><span class="nf">eval</span><span class="p">()</span> <span class="c1"># yields MissingInputError
+</span><span class="n">z</span><span class="p">.</span><span class="nf">eval</span><span class="p">({</span><span class="n">x</span><span class="p">:</span> <span class="mf">3.</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="mf">4.</span><span class="p">})</span> <span class="c1"># yields array(7.)
+</span></code></pre></div></div>
+
+<p>Likewise, we can call upon <code class="language-plaintext highlighter-rouge">aesara.function</code> to do the compilation for us and retrieve a function that Python users are more familiar with.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">f</span> <span class="o">=</span> <span class="n">aesara</span><span class="p">.</span><span class="nf">function</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">z</span><span class="p">)</span>
+<span class="nf">f</span><span class="p">(</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">)</span> <span class="c1"># yields array(7.)
+</span></code></pre></div></div>
+
+<h4 id="optimizing-expressions"><strong>Optimizing Expressions</strong></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x_1</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">at</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">x_2</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">at</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="n">f1</span> <span class="o">=</span> <span class="n">aesara</span><span class="p">.</span><span class="nf">function</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">x_1</span><span class="p">)</span>
+<span class="n">f2</span> <span class="o">=</span> <span class="n">aesara</span><span class="p">.</span><span class="nf">function</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">x_2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Observe that the exponential function is the inverse of the logarithm function and vice-versa. <code class="language-plaintext highlighter-rouge">x_1</code> is in fact identical to <code class="language-plaintext highlighter-rouge">x</code>, but domain restriction renders <code class="language-plaintext highlighter-rouge">x_2</code> equal to <code class="language-plaintext highlighter-rouge">x</code> only for positive <code class="language-plaintext highlighter-rouge">x</code>. It can be written in a piecewise fashion as follows:</p>
+
+\[x_2 =
+\begin{cases}
+    x &amp; \text{if } x &gt; 0\\
+    \text{undefined} &amp; \text{otherwise.}
+\end{cases}\]
+
+<p>As such, using the very useful <code class="language-plaintext highlighter-rouge">aesara.dprint</code> function to print computational graphs, <code class="language-plaintext highlighter-rouge">f1</code> and <code class="language-plaintext highlighter-rouge">f2</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">aesara</span><span class="p">.</span><span class="nf">dprint</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
+
+<span class="c1"># DeepCopyOp [id A] 0
+#  |&lt;TensorType(float64, ())&gt; [id B]
+</span>
+<span class="n">aesara</span><span class="p">.</span><span class="nf">dprint</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
+
+<span class="c1"># Elemwise{Composite{Switch(GE(i0, i1), i0, i2)}} [id A] 0
+#  |&lt;TensorType(float64, ())&gt; [id B]
+#  |TensorConstant{0} [id C]
+#  |TensorConstant{nan} [id D]
+</span></code></pre></div></div>
+
+<p>The printed optimized graph shows that <code class="language-plaintext highlighter-rouge">f1</code> is just the identify function, but <code class="language-plaintext highlighter-rouge">f2</code> has some domain restriction for the input, although the exact restriction is not exactly obvious from the printed graph.</p>
+
+<h2 id="aeppl-201"><strong>AePPL 201</strong></h2>
+
+<p><small>(201 because there is no 101 due to its complexity...)</small></p>
+
+<p>Note that, in the description of Aesara, there is no mentioning of random variables, log-probability nor stochastic primitives. This is because Aesara is the computational framework that solely focuses on defining and optimizing the graph-like that underpins mathematical expressions irrespective of the deterministic or stochastic nature of variables.</p>
+
+<p>A good example of AePPL’s utility is its ability to provide log-probabilities is in the case of a two component mixture model. Consider a random variable \(Z\) with a mixture density \(f_Z(z)\) as follows:</p>
+
+\[f_Z(z) = w_1 f_{Z_1}(z) + w_2 f_{Z_2}(z)\]
+
+<p>with \(Z_1 \sim \mathcal{N}(-5, 0.1)\) and \(Z_2 \sim \mathcal{N}(5, 0.1)\). Equivalently, the Aesara graph can be constructed using an <code class="language-plaintext highlighter-rouge">at.stack</code> operation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">aesara</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">at</span>
+<span class="kn">from</span> <span class="n">aeppl</span> <span class="kn">import</span> <span class="n">joint_logprob</span>
+
+<span class="n">srng</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nc">RandomStream</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">2320</span><span class="p">)</span>
+
+<span class="n">I_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">bernoulli</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">I</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X1_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X2_rv</span> <span class="o">=</span> <span class="n">srng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">X</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">Z_rv</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">stack</span><span class="p">([</span><span class="n">X1_rv</span><span class="p">,</span> <span class="n">X2_rv</span><span class="p">])[</span><span class="n">I_rv</span><span class="p">]</span>
+
+<span class="n">logp</span> <span class="o">=</span> <span class="nf">joint_logprob</span><span class="p">({</span><span class="n">Z_rv</span><span class="p">:</span> <span class="n">Z_rv</span><span class="p">.</span><span class="nf">copy</span><span class="p">(),</span> <span class="n">I_rv</span><span class="p">:</span> <span class="n">I_rv</span><span class="p">.</span><span class="nf">copy</span><span class="p">()})</span>
+</code></pre></div></div>
+
+<p>As such, the log-probability function is able to provide the density of the correct component using indexing here:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">logp</span><span class="p">.</span><span class="nf">eval</span><span class="p">({</span><span class="n">z_vv</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">i_vv</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span> <span class="c1"># array(0.69049938)
+</span><span class="n">logp</span><span class="p">.</span><span class="nf">eval</span><span class="p">({</span><span class="n">z_vv</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">i_vv</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span> <span class="c1"># array(-4999.30950062)
+</span></code></pre></div></div>
+
+<h2 id="my-progress-so-far"><strong>My Progress So Far</strong></h2>
+
+<ul>
+  <li><a href="https://github.com/pymc-devs/pymc/pull/5814">PyMC Gaussian Random Walk PR</a>;</li>
+  <li><a href="https://github.com/aesara-devs/aeppl/pull/154/">Defining Mixtures using <code class="language-plaintext highlighter-rouge">Switch</code> statements</a>.</li>
+</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[Cheers to another summer of code!]]></summary></entry><entry><title type="html">Merged my first distribution class 🎉</title><link href="https://larryshamalama.github.io/gsoc/stickbreakingweights/" rel="alternate" type="text/html" title="Merged my first distribution class 🎉" /><published>2022-01-28T16:00:00+00:00</published><updated>2022-01-28T16:00:00+00:00</updated><id>https://larryshamalama.github.io/gsoc/stickbreakingweights</id><content type="html" xml:base="https://larryshamalama.github.io/gsoc/stickbreakingweights/"><![CDATA[<p>Link to pull request: <a href="https://github.com/pymc-devs/pymc/pull/5200">https://github.com/pymc-devs/pymc/pull/5200</a></p>
+
+<p>After a long (two month) process, my PR on adding a distribution class has been merged! 🙂 The whole process of taking the initiative to contribute to PyMC was rewarding, but definitely not easy.</p>
+
+<h3 id="revisiting-dirichlet-processes">Revisiting Dirichlet Processes</h3>
+
+<p>A random distribution \(G\) has a Dirichlet Process (DP) prior, denoted by \(G \sim \text{DP}(\alpha, G_0)\) if any finite partition \(\{A_i\}_{i=1}^n\) of the sample space \(\Theta\) follows a Dirichlet distribution as such:</p>
+
+\[\Big(G(A_1), \dots, G(A_n) \Big) \sim \text{Dir}\Big(\alpha G_0(A_1), \dots, \alpha G_0(A_n) \Big)\]
+
+<p>where \(\alpha &gt; 0\) is the concentration parameter and \(G_0\) is some base distribution, e.g. \(G_0 \equiv \mathcal{N}(0, 1)\). The higher the value of \(\alpha\), the smaller the weight values will be.</p>
+
+<div class="row justify-content-sm-center">
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+        <picture>
+    
+    <source media="(max-width: 480px)" srcset="/assets/resized/stick-breaking-weights-480x322.jpg" />
+    
+    <source media="(max-width: 800px)" srcset="/assets/resized/stick-breaking-weights-800x537.jpg" />
+    
+    <source media="(max-width: 1400px)" srcset="/assets/resized/stick-breaking-weights-1400x940.jpg" />
+    
+    <img class="img-fluid rounded mx-auto d-block" src="/assets/img/stick-breaking-weights.jpg" />
+</picture>
+
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
+</div>
+<div class="caption">
+    Here is a visual depiction of how the weights are obtained from a stick-breaking construction. At each iteration, a weight is taken from the remainder of a stick, initially to be one unit long. Figure taken from <a href="https://discovery.ucl.ac.uk/id/eprint/20467/1/20467.pdf">Sivakumar Murugiah's thesis</a>.
+</div>
+
+<p>It can be initially difficult to understand why such a construction is useful, let alone nonparametric, but the idea is as followed. In Bayesian inference, we wish to perform inference by conditioning on observed data and looking at the posterior distribution of parameters of interest. However, by positing a DP prior on \(G\), we can effectively perform inference on the distribution \(G\) <em>without</em> positing any distributional assumption, hence rendering this construction nonparametric despite the need to specify \(G_0\). It is already worth mentioning that a DP prior poses some “strong” restrictions, so a more common application of DPs are to posit them as priors in mixture modelling, but more on that at a later date…</p>
+
+<p>When it comes to sampling, there are many schemas with desirable properties that provide nice (conditional)posterior distributions (see <a href="https://en.wikipedia.org/wiki/Chinese_restaurant_process">Chinese Restaurant Process</a> and <a href="https://en.wikipedia.org/wiki/P%C3%B3lya_urn_model">Polya Urn</a>). However, an inherent challenge to build a DP functionality to PyMC is to leverage its default sampling methods which are primarily gradient-based, i.e. Hamiltonian Monte Carlo (HMC) or some of its extensions if I remember correctly. As such, the most useful construction of a DP is to represent it as an infinite linear combination of weights obtained via a stick-breaking process and atoms, represented as Dirac delta distributions:</p>
+
+\[G = \sum_{h=1}^\infty w_h \delta_{m_h}\]
+
+<p>where \(w_h = v_h \prod_{\ell &lt; h} (1 - v_\ell)\) where \(v_h \stackrel{\text{i.i.d.}}{\sim} \text{Beta}(1, \alpha)\) and \(m_h \stackrel{\text{i.i.d.}}{\sim} G_0\). This construction is particularly helpful since it is more easily vectorizable and plays into the strengths of HMC. Of course, as taught in undergraduate calculus, infinity is a concept, not a number, and our computers couldn’t agree more. Instead of an infinite sum, we can express \(G\) using some large truncation parameter \(K\) and this finite approximation is justified by <a href="http://people.ee.duke.edu/~lcarin/Yuting3.3.06.pdf">Ishwaran and James (2001)</a>:</p>
+
+\[G = \sum_{h=1}^K w_h \delta_{m_h} \, .\]
+
+<p>From the same article, we have that the distribution of stick-breaking weights follows a generalized Dirichlet distribution, so that turns out to be the first step in implementing a submodule for DPs.</p>
+
+<h3 id="randomvariable-classes-in-pymcaesara"><code class="language-plaintext highlighter-rouge">RandomVariable</code> classes in PyMC/Aesara</h3>
+
+<p>In PyMC, distributions are implemented as <code class="language-plaintext highlighter-rouge">Distribution</code> classes with <code class="language-plaintext highlighter-rouge">RandomVariable</code> instances <code class="language-plaintext highlighter-rouge">rv_op</code>. These <code class="language-plaintext highlighter-rouge">rv_op</code> have an <code class="language-plaintext highlighter-rouge">rng_fn</code> method that is able to generate samples from the prior distribution and it serves as the basis of <code class="language-plaintext highlighter-rouge">pm.sample_prior_predictive</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">StickBreakingWeightsRV</span><span class="p">(</span><span class="n">RandomVariable</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="sh">"</span><span class="s">stick_breaking_weights</span><span class="sh">"</span>
+    <span class="n">ndim_supp</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ndims_params</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="sh">"</span><span class="s">floatX</span><span class="sh">"</span>
+    <span class="n">_print_name</span> <span class="o">=</span> <span class="p">(</span><span class="sh">"</span><span class="s">StickBreakingWeights</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="se">\\</span><span class="s">operatorname{StickBreakingWeights}</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">make_node</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">as_tensor_variable</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">as_tensor_variable</span><span class="p">(</span><span class="nf">intX</span><span class="p">(</span><span class="n">K</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">alpha</span><span class="p">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nc">ValueError</span><span class="p">(</span><span class="sh">"</span><span class="s">The concentration parameter needs to be a scalar.</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">K</span><span class="p">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nc">ValueError</span><span class="p">(</span><span class="sh">"</span><span class="s">K must be a scalar.</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nf">super</span><span class="p">().</span><span class="nf">make_node</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_infer_shape</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dist_params</span><span class="p">,</span> <span class="n">param_shapes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">alpha</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">dist_params</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="nf">tuple</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">size</span> <span class="o">+</span> <span class="p">(</span><span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">rng_fn</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">K</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nc">ValueError</span><span class="p">(</span><span class="sh">"</span><span class="s">K needs to be positive.</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">K</span><span class="p">,)</span>
+        <span class="k">elif</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="n">K</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nf">tuple</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">K</span><span class="p">,)</span>
+
+        <span class="n">betas</span> <span class="o">=</span> <span class="n">rng</span><span class="p">.</span><span class="nf">beta</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="n">sticks</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">concatenate</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">np</span><span class="p">.</span><span class="nf">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">size</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))),</span>
+                <span class="n">np</span><span class="p">.</span><span class="nf">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">betas</span><span class="p">[...,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">sticks</span> <span class="o">*</span> <span class="n">betas</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">concatenate</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">weights</span><span class="p">.</span><span class="nf">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[...,</span> <span class="n">np</span><span class="p">.</span><span class="n">newaxis</span><span class="p">]),</span>
+            <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">weights</span>
+</code></pre></div></div>
+
+<p>First, the distinction between <code class="language-plaintext highlighter-rouge">StickBreakingWeightsRV</code> and <code class="language-plaintext highlighter-rouge">StickBreakingWeights</code> is important as the latter is the one that will be used under a <code class="language-plaintext highlighter-rouge">pm.Model()</code> context manager. The <code class="language-plaintext highlighter-rouge">rng_fn</code> essentially follows the mathematical stick-breaking construction in that \(K\) i.i.d. draws from a \(\text{Beta}(1, \alpha)\) are used to construct \(w_1, \dots, w_{K}\) with \(w_{K+1} = 1 - \sum_{\ell=1}^K w_\ell\). An inherent challenge of this design is to abide by the existing OOP structure of the library since all the intricacies are not obvious. For instance, while <code class="language-plaintext highlighter-rouge">size</code> is used to specify the dimension of the observations that we want to sample (also in <code class="language-plaintext highlighter-rouge">StickBreakingWeights</code> below), we decided to provide the truncation parameter <code class="language-plaintext highlighter-rouge">K</code> as an explicit argument rather than include as part of <code class="language-plaintext highlighter-rouge">size</code> or <code class="language-plaintext highlighter-rouge">shape</code>.</p>
+
+<h3 id="a-distribution-class-for-truncated-stick-breaking-weights">A distribution class for (truncated) stick-breaking weights</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">StickBreakingWeights</span><span class="p">(</span><span class="n">Continuous</span><span class="p">):</span>
+    <span class="c1"># rv_op instance defined as: stickbreakingweights = StickBreakingWeights()
+</span>    <span class="n">rv_op</span> <span class="o">=</span> <span class="n">stickbreakingweights</span>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">.</span><span class="nf">setdefault</span><span class="p">(</span><span class="sh">"</span><span class="s">transform</span><span class="sh">"</span><span class="p">,</span> <span class="n">transforms</span><span class="p">.</span><span class="n">simplex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nf">super</span><span class="p">().</span><span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">as_tensor_variable</span><span class="p">(</span><span class="nf">floatX</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">as_tensor_variable</span><span class="p">(</span><span class="nf">intX</span><span class="p">(</span><span class="n">K</span><span class="p">))</span>
+
+        <span class="nf">assert_negative_support</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="sh">"</span><span class="s">alpha</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">StickBreakingWeights</span><span class="sh">"</span><span class="p">)</span>
+        <span class="nf">assert_negative_support</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="sh">"</span><span class="s">K</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">StickBreakingWeights</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nf">super</span><span class="p">().</span><span class="nf">dist</span><span class="p">([</span><span class="n">alpha</span><span class="p">,</span> <span class="n">K</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_moment</span><span class="p">(</span><span class="n">rv</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+        <span class="n">moment</span> <span class="o">=</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">))</span> <span class="o">**</span> <span class="n">at</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+        <span class="n">moment</span> <span class="o">*=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="n">moment</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">concatenate</span><span class="p">([</span><span class="n">moment</span><span class="p">,</span> <span class="p">[(</span><span class="n">alpha</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">))</span> <span class="o">**</span> <span class="n">K</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nf">rv_size_is_none</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">moment_size</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">concatenate</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">size</span><span class="p">,</span>
+                    <span class="p">[</span>
+                        <span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="p">],</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">moment</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">full</span><span class="p">(</span><span class="n">moment_size</span><span class="p">,</span> <span class="n">moment</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">moment</span>
+
+    <span class="k">def</span> <span class="nf">logp</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+        <span class="sh">"""</span><span class="s">
+        Calculate log-probability of the distribution induced from the stick-breaking process
+        at specified value.
+
+        Parameters
+        ----------
+        value: numeric
+            Value for which log-probability is calculated.
+
+        Returns
+        -------
+        TensorVariable
+        </span><span class="sh">"""</span>
+        <span class="n">logp</span> <span class="o">=</span> <span class="o">-</span><span class="n">at</span><span class="p">.</span><span class="nf">sum</span><span class="p">(</span>
+            <span class="n">at</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span>
+                <span class="n">at</span><span class="p">.</span><span class="nf">cumsum</span><span class="p">(</span>
+                    <span class="n">value</span><span class="p">[...,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">logp</span> <span class="o">+=</span> <span class="o">-</span><span class="n">K</span> <span class="o">*</span> <span class="nf">betaln</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="n">logp</span> <span class="o">+=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">at</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">value</span><span class="p">[...,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">logp</span> <span class="o">=</span> <span class="n">at</span><span class="p">.</span><span class="nf">switch</span><span class="p">(</span>
+            <span class="n">at</span><span class="p">.</span><span class="nf">or_</span><span class="p">(</span>
+                <span class="n">at</span><span class="p">.</span><span class="nf">any</span><span class="p">(</span>
+                    <span class="n">at</span><span class="p">.</span><span class="nf">and_</span><span class="p">(</span><span class="n">at</span><span class="p">.</span><span class="nf">le</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">at</span><span class="p">.</span><span class="nf">ge</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+                    <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">at</span><span class="p">.</span><span class="nf">or_</span><span class="p">(</span>
+                    <span class="n">at</span><span class="p">.</span><span class="nf">bitwise_not</span><span class="p">(</span><span class="n">at</span><span class="p">.</span><span class="nf">allclose</span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="nf">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)),</span>
+                    <span class="n">at</span><span class="p">.</span><span class="nf">neq</span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="o">-</span><span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">,</span>
+            <span class="n">logp</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nf">check_parameters</span><span class="p">(</span>
+            <span class="n">logp</span><span class="p">,</span>
+            <span class="n">alpha</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">K</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="sh">"</span><span class="s">alpha &gt; 0, K &gt; 0</span><span class="sh">"</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></div>
+
+<p>The length of this <code class="language-plaintext highlighter-rouge">Distribution</code> class may seem a bit daunting, but here is a summary of each method.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">__new__</code>: Here, we suggest the default transformation that would help sampling. Because each weight is between 0 and 1, the range of the transformed “weight” is not \(\mathbb{R}\) so the sampler cannot go into “danger” territories.</li>
+  <li><code class="language-plaintext highlighter-rouge">dist</code>: It is a bottleneck method which takes inputs that parametrize the distribution. At this point, inputs can be “anything”, i.e. they have not necessarily been transformed into <code class="language-plaintext highlighter-rouge">aesara.tensor.var.TensorVariable</code> instances yet.</li>
+  <li><code class="language-plaintext highlighter-rouge">get_moment</code>: An approach that PyMC has recently taken is to initialize samplers at the mean of each distribution (with no observations). For that purpose, <code class="language-plaintext highlighter-rouge">get_moment</code> has been introduced and, given that stick-breaking weights are a product of linear transformations of i.i.d. Beta random variables, we have that:</li>
+</ul>
+
+\[\mathbb{E}\left[w_h\right] = \frac{1}{1 + \alpha}\left(\frac{\alpha}{1 + \alpha}\right)^{h - 1}\]
+
+<p>for all \(h = 1, \dots, K\) and \(\mathbb{E}\left[w_{K+1}\right] = \left(\frac{\alpha}{1 + \alpha}\right)^{K}\).</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">logp</code>: While it may seem naive, this is the most important method as this is exactly what allows <code class="language-plaintext highlighter-rouge">pm.sample()</code> to do its magic. Here, I provide the log distribution of a generalized Dirichlet distribution with \(b_h = 1\) and \(a_h = \alpha\) for all \(h\) with respect to the density provided in the <a href="https://en.wikipedia.org/wiki/Generalized_Dirichlet_distribution">Wiki article</a>. Note that we assume that <code class="language-plaintext highlighter-rouge">value</code> can be of any dimension. Everything else in the method (what’s in <code class="language-plaintext highlighter-rouge">at.switch</code> and <code class="language-plaintext highlighter-rouge">check_parameters</code>) are to ensure that inputs and parameters are all valid with respect to the distribution’s constraints; errors would be raised if we provided something like <code class="language-plaintext highlighter-rouge">alpha = -2</code>, for instance.</li>
+</ul>
+
+<p>A small comment that I added unit tests regarding this distribution: testing shapes, <code class="language-plaintext highlighter-rouge">logp</code>, <code class="language-plaintext highlighter-rouge">rng_fn</code> and their extensions to multidimensional samples. I do not talk about them here, but unit tests are quite important and, given that I didn’t know what they were before, it was an interesting learning experience.</p>
+
+<h3 id="some-final-comments">Some final comments</h3>
+
+<p>As I am pursuing a PhD, this experience of contributing to open source has been extremely rewarding and educational. It was not an easy process, but it was enjoyable, as I was able to learn a lot about the process of “properly” contributing code (in quotation marks because I am no software engineer and who am I to say that this is the proper method although this is the by far most structure that I have ever experienced).</p>
+
+<p>The next steps are to properly simulate data from a DP to better understand how we should go about building an API for it. The ultimate goal is to have a working submodule and a nice class for DP Mixtures, which will probably be the most useful extension of DPs in practice.</p>
+
+<h3 id="thanks">Thanks</h3>
+
+<p>Firstly, a big thanks to you for reading this post! While this was a nice exercise for myself, it’s nice to have people read on my work (and comment on it if you want!). I am proud to have coded everything, but none of this was possible without the help of these amazing people, who were always there to share their ideas and comments about my code:</p>
+
+<ul>
+  <li><a href="https://austinrochford.com/">Austin Rochford</a></li>
+  <li><a href="https://twitter.com/fonnesbeck">Chris Fonnesbeck</a></li>
+  <li><a href="https://github.com/ricardoV94/">Ricardo Vieira</a></li>
+</ul>
+
+<p>Last but not least, a big thanks to the entire PyMC community for answering all my questions and all their ongoing efforts, whether they are noticeable or not 🚀</p>]]></content><author><name></name></author><summary type="html"><![CDATA[The first step to Dirichlet processes]]></summary></entry><entry><title type="html">Work Product Submission Guidelines</title><link href="https://larryshamalama.github.io/gsoc/gsoc-final/" rel="alternate" type="text/html" title="Work Product Submission Guidelines" /><published>2021-08-23T16:00:00+00:00</published><updated>2021-08-23T16:00:00+00:00</updated><id>https://larryshamalama.github.io/gsoc/gsoc-final</id><content type="html" xml:base="https://larryshamalama.github.io/gsoc/gsoc-final/"><![CDATA[<p>Edit (February 7, 2022): A small comment that, upon cleaning my computer, many of my 2021 GSoC posts have been deleted (I also happened to be in the process of reformatting my website), so this is why my 2021 summer blog and this work submission may seem kind of empty…</p>
+
+<p>This post effectively marks the end of my GSoC experience, but just the beginning of my project. As per the Work Submission Guidelines, detailed here are my contributions. The goal of my project is to build a submodule on Dirichlet Processes, a Bayesian nonparametric method for the estimation of probability distributions. I have worked on many aspects that would benefit the submodule, but no pull requests will be merged into the main branch by the end of the summer.</p>
+
+<h3 id="1---testing">1 - Testing</h3>
+
+<p>We spent a good portion of the summer discussing about testing for two reasons: (1) tests can serve as checks for my understanding of statistical theory and what I want my code to accomplish and (2) visual tests will ultimately turn into unit tests, which will be integrated in the CD/CI pipeline.</p>
+
+<h5 id="1a---generating-the-right-data">1.A - Generating the right data</h5>
+
+<p>Notebook: https://github.com/larryshamalama/pymc3-playground/blob/master/notebooks/step-by-step/test-multiple-dp-samples.ipynb.</p>
+
+<p>Dirichlet processes are specified by two things: a concentration parameter M and a base distribution G0. The first step was to design a visual test that can retrieve the concentration parameter. For instance, if we defined G0 to be \(\mathcal{N}(5, 3^2)\), we can attempt to retrieve the mean of \(\mu = 5\) via the following test:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mu</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nc">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">34</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">,])</span>
+
+<span class="k">with</span> <span class="n">pm</span><span class="p">.</span><span class="nc">Model</span><span class="p">()</span> <span class="k">as</span> <span class="n">model</span><span class="p">:</span>
+    <span class="n">µ</span> <span class="o">=</span> <span class="n">pm</span><span class="p">.</span><span class="nc">Normal</span><span class="p">(</span><span class="sh">"</span><span class="s">µ</span><span class="sh">"</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">5.</span><span class="p">)</span>
+    <span class="n">G0</span> <span class="o">=</span> <span class="n">pm</span><span class="p">.</span><span class="nc">Normal</span><span class="p">(</span><span class="sh">"</span><span class="s">G0</span><span class="sh">"</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">µ</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">pm</span><span class="p">.</span><span class="nf">sample</span><span class="p">(</span><span class="n">draws</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">pm</span><span class="p">.</span><span class="nf">plot_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>and, lastly, <code class="language-plaintext highlighter-rouge">trace.to_dict()["posterior"]["µ"].mean()</code> should evaluate to be close to \(5\). Inference on stick-breaking weights can be a tad more challenging, but it is still possible. Running the reverse stick-breaking function on weights that sum to 1, we can retrieve the concentration parameter as followed:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nc">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">34</span><span class="p">)</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="n">rng</span><span class="p">.</span><span class="nf">beta</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="nf">stick_breaking</span><span class="p">(</span><span class="n">betas</span><span class="p">)</span>
+
+<span class="n">recovered_betas</span> <span class="o">=</span> <span class="nf">stick_glueing</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">pm</span><span class="p">.</span><span class="nc">Model</span><span class="p">()</span> <span class="k">as</span> <span class="n">model</span><span class="p">:</span>
+    <span class="n">α</span> <span class="o">=</span> <span class="n">pm</span><span class="p">.</span><span class="nc">Uniform</span><span class="p">(</span><span class="sh">"</span><span class="s">α</span><span class="sh">"</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">)</span>
+    <span class="n">β</span> <span class="o">=</span> <span class="n">pm</span><span class="p">.</span><span class="nc">Beta</span><span class="p">(</span><span class="sh">"</span><span class="s">β</span><span class="sh">"</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">α</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,),</span> <span class="n">observed</span><span class="o">=</span><span class="n">recovered_betas</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The notebook linked above combines both visual tests mentioned here. While it may seem redundant to obtain weights from betas and retrieve the latter back using stick_glueing, the two-level sampling below uses weights estimated using empirical frequencies of observed atoms. A preliminary first step was to get the tests here correct (which took me a while…).</p>
+
+<p>However, when generating weights, the data-generating code above is prone to fail under small values of \(M\). This is normal because the stick proportions that we break off are “bigger” and hence the remainder can easily fall below \(10^{-16}\), which is were precision issues occur. See <a href="https://github.com/larryshamalama/pymc3-playground/blob/master/notebooks/shortcomings/replicate-precision-error.ipynb">this notebook</a> in which I replicate this issue.</p>
+
+<h5 id="1b---two-level-sampling">1.B - Two-level sampling</h5>
+
+<p>Samples from a Dirichlet Process are a distribution themselves. A ``two-level’’ sampling approach to simulating data would be to sample from a Dirichlet Process a (discrete) distribution from which <code class="language-plaintext highlighter-rouge">N_dp</code> samples are sampled. Inference can then be performed on such samples, see progress in <a href="https://github.com/larryshamalama/pymc3-playground/blob/master/notebooks/progress/test-two-level-sampling.ipynb">this notebook</a>.</p>
+
+<h3 id="2---creating-a-stickbreakingweights-randomvariable">2 - Creating a StickBreakingWeights RandomVariable</h3>
+
+<p>See ongoing progres in <a href="https://github.com/pymc-devs/pymc/pull/5200">this PR</a>.</p>
+
+<h3 id="3---the-dirichletprocess-class-an-ongoing-effort">3 - The DirichletProcess class: an ongoing effort…</h3>
+
+<p>See work-in-progress in <a href="https://github.com/pymc-devs/pymc/pull/4809">this PR</a>.</p>
+
+<h3 id="final-comments">Final Comments</h3>
+
+<p>I am extremely grateful for this enriching opportunity and the support from my mentors Austin and Chris. Being a graduate student who’s primary goal is to understand statistical theory and do research, this experience has allowed me to strengthen my programming skills, but especially discover the plethora of opportunities in open source development. While my progress this summer was slow, I am confident that I will be able to get this submodule to work in the coming months.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[The End of GSoC 2021]]></summary></entry><entry><title type="html">git rebase, git commit, git teach me how to contribute to open source</title><link href="https://larryshamalama.github.io/gsoc/community-bonding-week-3-4/" rel="alternate" type="text/html" title="git rebase, git commit, git teach me how to contribute to open source" /><published>2021-06-03T16:00:00+00:00</published><updated>2021-06-03T16:00:00+00:00</updated><id>https://larryshamalama.github.io/gsoc/community-bonding-week-3-4</id><content type="html" xml:base="https://larryshamalama.github.io/gsoc/community-bonding-week-3-4/"><![CDATA[<p>The rest of community bonding was spent interacting with the PyMC developpers and, above all, learning how to better use GitHub. On the statistical theory side, things are progressing faster. Admittedly, on the coding side, I have come to full realization that my foundation is more lacking and there is a lot to learn.</p>
+
+<p>Emotionally, it has sometimes been difficult to accept my slow progress and feeling completely lost… I feel that I am currently in a slump and am not too sure where to even look for directions. There are many weeks left, so lots of room to better myself!</p>
+
+<p>Here are some lessons and some areas that I need to work on for the coming weeks.</p>
+
+<h3 id="1---managing-a-better-git-workflow">1 - Managing a better Git workflow</h3>
+
+<p>I will be working on different branches at a time. For instance, my implementation of a DP submodule should be done independently from addressing PyMC3 issues. Familiarizing myself with how to use git merge, git reset and git rebase will be very important to ensure properly flow as as aspiring developper. For now, what I have gathered is summarized in the following steps as I am working on my branch dp-gsoc:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git commit my progress. <span class="c"># I don’t have to push to origin yet!</span>
+git checkout main to go back to main and
+git pull upstream to update my <span class="nb">local </span>repository with respect to upstream. It would be also <span class="nb">nice </span>to push to origin main with a simple git push <span class="nt">-u</span> origin main.
+git checkout dp-gsoc followed by
+git merge main to update my <span class="nb">local </span>branch with the updates from upstream main
+</code></pre></div></div>
+
+<p>This is a failed-proof method since I am currently working on a brand new submodule, so I don’t expect to encounter any merge conflicts 😅</p>
+
+<h3 id="2---asking-questions">2 - Asking questions</h3>
+
+<p>Asking the right and right number of questions has also not been easy. I can spend countless hours asking PyMC developpers and contributors for pointers and answers, but, in many instances, I just often have a feeling that my questions are too “basic”. This “imposter syndrome” feeling is not fun, but I try very hard to go through all (if not most) of the documentation before asking any questions. However, if I’m stuck for any longer, I feel that I should not hesitate.</p>
+
+<h3 id="3---knowing-what-i-dont-need-to-know">3 - Knowing what I don’t need to know</h3>
+
+<p>When it came to understanding the codebase, it was initially difficult for me to discern what I need to know for my project versus what I don’t need to know. For instance, PyMC3 is built on top aesara which, apparently, not everybody understands to its full extent. And that’s more than okay to keep working with my GSoC project :’)</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Community Bonding Weeks 3 and 4]]></summary></entry><entry><title type="html">Community Bonding Week 2</title><link href="https://larryshamalama.github.io/gsoc/community-bonding-week-2/" rel="alternate" type="text/html" title="Community Bonding Week 2" /><published>2021-05-24T16:00:00+00:00</published><updated>2021-05-24T16:00:00+00:00</updated><id>https://larryshamalama.github.io/gsoc/community-bonding-week-2</id><content type="html" xml:base="https://larryshamalama.github.io/gsoc/community-bonding-week-2/"><![CDATA[<p>January 2022 edit: Some parts have been edited following a change in the layout of the website.</p>
+
+<p>My second week was spent mostly diving into textbooks to better understand what Dirichlet processes entail. To do so, I started with a brief revision of probability theory and reviewing Gaussian processes. Why? Given that I am should be studying for my comprehensive exams, I thought that I better understand what it means to posit priors on the space of probability measures. As recommended by my mentors, a good starting point would be to look at Gaussian processes (GP) since I found Dirichlet processes very difficult to wrap my head around. GPs are convenient priors for continuous functions and they seem to be slightly more easy to understand.</p>
+
+<p>As an inspiration for the starting point of my learning, here one of my favorite Calvin and Hobbes strip.</p>
+
+<div class="row justify-content-sm-center">
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+        <picture>
+    
+    <source media="(max-width: 480px)" srcset="/assets/resized/calvin-hobbes-480x395.jpeg" />
+    
+    <img class="img mx-auto d-block" src="/assets/img/calvin-hobbes.jpeg" />
+</picture>
+
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
+</div>
+<div class="caption">
+    A strip from my favorite comic, Calvin and Hobbes
+</div>
+
+<p>As a side note, I am part of the organizing committee for the 2021 Canadian Statistics Student Conference which will be happening this Saturday, June 5. Quebec also just announced that the administration of second vaccination doses have been sped up. All lot is going on, and it’s all exciting!</p>
+
+<h3 id="a-bit-about-bayesian-nonparametrics">A bit about Bayesian nonparametrics…</h3>
+
+<p>When performing inference, we often posit parametric assumptions on the data-generating mechanism. However, this can be restrictive especially when we don’t know the functional form of such underlying mechanism. In these situations, we can turn to nonparametric methods which, as the name suggests, do not posit distributional assumptions and hence protects against model misspecification. In Bayesian nonparametrics (BNP), we can put priors on functions or probability distribution themselves. As Peter Müller once said when talking about ANOVA DDPs, a type of Dirichlet process: “A BNP is always right in the sense, no matter the true distribution, our prior always puts some probability mass in some neighborhood of the truth so we can learn about it. It has full support.” (see video here)</p>
+
+<p>Here are some references that I used during the week:</p>
+
+<ul>
+  <li>Bayesian Nonparametrics by N. Hjort et al. (2010);</li>
+  <li>Bayesian Nonparametric Data Analysis by P. Müller et al. (2015);</li>
+  <li>Machine Learning: a Probabilistic Perspective by K. Murphy (2012);
+the probability theory textbooks mentioned above.</li>
+</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[📚 Diving into the math...]]></summary></entry><entry><title type="html">Community Bonding Week 1</title><link href="https://larryshamalama.github.io/gsoc/community-bonding-week-1/" rel="alternate" type="text/html" title="Community Bonding Week 1" /><published>2021-05-14T16:00:00+00:00</published><updated>2021-05-14T16:00:00+00:00</updated><id>https://larryshamalama.github.io/gsoc/community-bonding-week-1</id><content type="html" xml:base="https://larryshamalama.github.io/gsoc/community-bonding-week-1/"><![CDATA[<p>The first year of my PhD studies had, in all honesty, some rather unexpected challenges. Given the ongoing pandemic, my move to a new city for my PhD studies was put on hold. Instead, I decided to spend more quality time with one of my good friends (he’s a great cook!) and my parents. As spring was looming in, I quickly ran out of motivation to work on assignments and write my end-of-term report, but, with the help of my support network and all things considered, my first year ended well!</p>
+
+<p>With summer right around the corner, I was eager for some good news and an opportunity to look forward to. On Monday, May 17 right before 2pm, I received the following email and nearly floored with happiness:</p>
+
+<div class="row justify-content-sm-center">
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+        <picture>
+    
+    <source media="(max-width: 480px)" srcset="/assets/resized/acceptance-480x260.png" />
+    
+    <source media="(max-width: 800px)" srcset="/assets/resized/acceptance-800x433.png" />
+    
+    <img class="img-fluid rounded mx-auto d-block" src="/assets/img/acceptance.png" />
+</picture>
+
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
+</div>
+
+<p>and I immediately shared this amazing news with my parents and my friends. I am extremely grateful for the Google Summer of Code (GSoC) opportunity for the many reasons. Firstly, I will learn more about open source development and probabilistic programming from well-established mentors. Secondly, this practical opportunity would complement well my summer studying for my PhD comprehensive exams. Last but not least, I’m being paid! :sweat_smile:</p>
+
+<p>Under the mentorship of Christopher Fonnesbeck and Austin Rochford, my GSoC project centers around extending the PyMC3 package with a Dirichlet process submodule. PyMC3 is a probabilistic framework in Python that allows users to fit Bayesian models via MCMC sampling. There is a growing interest in Bayesian nonparametric methods for fitting statistical models without specifying its parametric form. Dirichlet processes can be used as priors for probability distributions themselves. How exactly? I shall find out in the next three weeks of community bonding!</p>
+
+<p>In the coming months, I look forward to getting to know the PyMC3 community, reading more about Bayesian nonparametric statistics and, above all, learning from my mentors. Stay tuned for more!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[End of a Remote First Year of PhD Studies, Beginning of GSoC 2021]]></summary></entry></feed>

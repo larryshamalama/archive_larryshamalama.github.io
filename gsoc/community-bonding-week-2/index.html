@@ -12,7 +12,7 @@
   Larry  Dong
 
 
-  | gsoc
+  | Community Bonding Week 2
 
 </title>
 <meta name="description" content="A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
@@ -39,7 +39,7 @@
  -->
 <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
 <link rel="stylesheet" href="/assets/css/main.css">
-<link rel="canonical" href="https://larryshamalama.github.io/gsoc/">
+<link rel="canonical" href="https://larryshamalama.github.io/gsoc/community-bonding-week-2/">
 
 
 <!-- Dark Mode -->
@@ -85,14 +85,10 @@
             <a class="nav-link" href="/gsoc/">
               gsoc
               
-              <span class="sr-only">(current)</span>
-              
             </a>
           </li>
            -->
           <!-- Other pages -->
-          
-          
           
           
           
@@ -155,8 +151,8 @@
           
           
           
-            <div class = "toggle-container">
-              <a id = "light-toggle">
+            <div class="toggle-container">
+              <a id="light-toggle">
                   <i class="fas fa-moon"></i>
                   <i class="fas fa-sun"></i>
               </a>
@@ -175,110 +171,55 @@
     <div class="container mt-5">
       <div class="post">
 
-  <div class="header-bar">
-    <h2>Google Summer of Code</h2>
-    <h5></h5>
-  </div>
-
-
-  <ul class="post-list">
+  <header class="post-header">
     
-
+      <h1 class="post-title">Community bonding week 2</h1>
     
+    <p class="post-description">📚 Diving into the math...</p>
+  </header>
+
+  <article>
+    <p>January 2022 edit: Some parts have been edited following a change in the layout of the website.</p>
+
+<p>My second week was spent mostly diving into textbooks to better understand what Dirichlet processes entail. To do so, I started with a brief revision of probability theory and reviewing Gaussian processes. Why? Given that I am should be studying for my comprehensive exams, I thought that I better understand what it means to posit priors on the space of probability measures. As recommended by my mentors, a good starting point would be to look at Gaussian processes (GP) since I found Dirichlet processes very difficult to wrap my head around. GPs are convenient priors for continuous functions and they seem to be slightly more easy to understand.</p>
+
+<p>As an inspiration for the starting point of my learning, here one of my favorite Calvin and Hobbes strip.</p>
+
+<div class="row justify-content-sm-center">
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+        <picture>
     
+    <source media="(max-width: 480px)" srcset="/assets/resized/calvin-hobbes-480x395.jpeg"></source>
     
-    
+    <img class="img mx-auto d-block" src="/assets/img/calvin-hobbes.jpeg">
+</picture>
 
-    <li>
-      <h3><a class="post-title" href="/gsoc/gsoc-2-final-submission/">GSoC 2022 Work Product Submission</a>
-      </h3>
-      <p>The end of another summer of code</p>
-      <p class="post-meta"> 6 min read &nbsp; &middot; &nbsp;
-        September 10, 2022
-      </p>
-      <p class="post-tags">
-        <a href="/gsoc/2022">
-          <i class="fas fa-calendar fa-sm"></i> 2022 </a>
+    </div>
+    <div class="col-sm-8 mt-3 mt-md-0">
+    </div>
+</div>
+<div class="caption">
+    A strip from my favorite comic, Calvin and Hobbes
+</div>
 
-          
+<p>As a side note, I am part of the organizing committee for the 2021 Canadian Statistics Student Conference which will be happening this Saturday, June 5. Quebec also just announced that the administration of second vaccination doses have been sped up. All lot is going on, and it’s all exciting!</p>
 
-          
-    </p>
-    </li>
+<h3 id="a-bit-about-bayesian-nonparametrics">A bit about Bayesian nonparametrics…</h3>
 
-    
+<p>When performing inference, we often posit parametric assumptions on the data-generating mechanism. However, this can be restrictive especially when we don’t know the functional form of such underlying mechanism. In these situations, we can turn to nonparametric methods which, as the name suggests, do not posit distributional assumptions and hence protects against model misspecification. In Bayesian nonparametrics (BNP), we can put priors on functions or probability distribution themselves. As Peter Müller once said when talking about ANOVA DDPs, a type of Dirichlet process: “A BNP is always right in the sense, no matter the true distribution, our prior always puts some probability mass in some neighborhood of the truth so we can learn about it. It has full support.” (see video here)</p>
 
-    
-    
-    
-    
+<p>Here are some references that I used during the week:</p>
 
-    <li>
-      <h3><a class="post-title" href="/gsoc/gsoc-2-part-2/">AePPL `Switch`-defined mixtures</a>
-      </h3>
-      <p>Maybe a new functionality to AePPL `Switches` would be to play multiplayer games on it 🤔</p>
-      <p class="post-meta"> 6 min read &nbsp; &middot; &nbsp;
-        August 2, 2022
-      </p>
-      <p class="post-tags">
-        <a href="/gsoc/2022">
-          <i class="fas fa-calendar fa-sm"></i> 2022 </a>
+<ul>
+  <li>Bayesian Nonparametrics by N. Hjort et al. (2010);</li>
+  <li>Bayesian Nonparametric Data Analysis by P. Müller et al. (2015);</li>
+  <li>Machine Learning: a Probabilistic Perspective by K. Murphy (2012);
+the probability theory textbooks mentioned above.</li>
+</ul>
 
-          
-
-          
-    </p>
-    </li>
-
-    
-
-    
-    
-    
-    
-
-    <li>
-      <h3><a class="post-title" href="/gsoc/gsoc-2-part-1/">GSoC 2022 - Part 1</a>
-      </h3>
-      <p>Cheers to another summer of code!</p>
-      <p class="post-meta"> 7 min read &nbsp; &middot; &nbsp;
-        June 29, 2022
-      </p>
-      <p class="post-tags">
-        <a href="/gsoc/2022">
-          <i class="fas fa-calendar fa-sm"></i> 2022 </a>
-
-          
-
-          
-    </p>
-    </li>
-
-    
-  </ul>
-
-  
-<nav aria-label="Blog page naviation">
-  <ul class="pagination pagination-lg justify-content-center">
-    <li class="page-item disabled">
-      <a class="page-link" href="" tabindex="-1" aria-disabled="">Newer</a>
-    </li>
-    
-      
-        <li class="page-item active"><a class="page-link" href="/gsoc/index.html" title="gsoc">1</a></li>
-      
-        <li class="page-item "><a class="page-link" href="/gsoc/page/2/index.html" title="gsoc - page 2">2</a></li>
-      
-        <li class="page-item "><a class="page-link" href="/gsoc/page/3/index.html" title="gsoc - page 3">3</a></li>
-      
-    
-    <li class="page-item ">
-      <a class="page-link" href="/gsoc/page/2/">Older</a>
-    </li>
-  </ul>
-</nav>
-
-
+  </article>
 
 </div>
 
@@ -289,8 +230,8 @@
     
 <footer class="fixed-bottom">
   <div class="container mt-0">
-    &copy; Copyright 2023 Larry  Dong.
-    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
+    © Copyright 2023 Larry  Dong.
+    Powered by <a href="http://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank" rel="noopener noreferrer">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a>.
 
     
     

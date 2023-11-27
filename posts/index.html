@@ -12,7 +12,7 @@
   Larry  Dong
 
 
-  | gsoc
+  | posts
 
 </title>
 <meta name="description" content="A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
@@ -39,7 +39,7 @@
  -->
 <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
 <link rel="stylesheet" href="/assets/css/main.css">
-<link rel="canonical" href="https://larryshamalama.github.io/gsoc/">
+<link rel="canonical" href="https://larryshamalama.github.io/posts/">
 
 
 <!-- Dark Mode -->
@@ -81,11 +81,9 @@
           </li>
           <!-- Blog -->
           <!-- 
-          <li class="nav-item active">
+          <li class="nav-item ">
             <a class="nav-link" href="/gsoc/">
               gsoc
-              
-              <span class="sr-only">(current)</span>
               
             </a>
           </li>
@@ -119,9 +117,11 @@
           
           
           
-          <li class="nav-item ">
+          <li class="nav-item active">
               <a class="nav-link" href="/posts/">
                 posts
+                
+                <span class="sr-only">(current)</span>
                 
               </a>
           </li>
@@ -155,8 +155,8 @@
           
           
           
-            <div class = "toggle-container">
-              <a id = "light-toggle">
+            <div class="toggle-container">
+              <a id="light-toggle">
                   <i class="fas fa-moon"></i>
                   <i class="fas fa-sun"></i>
               </a>
@@ -175,110 +175,86 @@
     <div class="container mt-5">
       <div class="post">
 
-  <div class="header-bar">
-    <h2>Google Summer of Code</h2>
-    <h5></h5>
-  </div>
-
-
-  <ul class="post-list">
+  <header class="post-header">
     
+      <h1 class="post-title">Posts</h1>
+    
+    <p class="post-description">Here are some miscellaneous posts that I (intend to) write every now and then</p>
+  </header>
 
+  <article>
+    <div class="projects">
+  
+  <!-- Display projects without categories -->
     
+    <!-- Generate cards for each project -->
     
+      <div class="grid">
+        
+          <div class="grid-item">
+  
+  <a href="/posts/2022-08-02-metaclass/">
+  
+    <div class="card hoverable">
+      
+        <picture>
     
+    <source media="(max-width: 480px)" srcset="/assets/resized/inception-480x252.png"></source>
     
+    <img src="/assets/img/inception.png" alt="project thumbnail">
+</picture>
 
-    <li>
-      <h3><a class="post-title" href="/gsoc/gsoc-2-final-submission/">GSoC 2022 Work Product Submission</a>
-      </h3>
-      <p>The end of another summer of code</p>
-      <p class="post-meta"> 6 min read &nbsp; &middot; &nbsp;
-        September 10, 2022
-      </p>
-      <p class="post-tags">
-        <a href="/gsoc/2022">
-          <i class="fas fa-calendar fa-sm"></i> 2022 </a>
-
+      
+      <div class="card-body">
+        <h2 class="card-title text-lowercase">Metaclasses, Class for Classes</h2>
+        <p class="card-text">Python Metaclasses and Bayesian Statistics, an unexpected marriage</p>
+        <div class="row ml-1 mr-1 p-0">
           
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
 
+        
+          <div class="grid-item">
+  
+  <a href="/posts/2022-06-18-value-oss/">
+  
+    <div class="card hoverable">
+      
+        <picture>
+    
+    <source media="(max-width: 480px)" srcset="/assets/resized/pymc-logo-480x196.png"></source>
+    
+    <source media="(max-width: 800px)" srcset="/assets/resized/pymc-logo-800x326.png"></source>
+    
+    <source media="(max-width: 1400px)" srcset="/assets/resized/pymc-logo-1400x571.png"></source>
+    
+    <img src="/assets/img/value-oss/pymc-logo.png" alt="project thumbnail">
+</picture>
+
+      
+      <div class="card-body">
+        <h2 class="card-title text-lowercase">Open-source for PhD students</h2>
+        <p class="card-text">Contributing to open-source is for everyone, especially PhD students!</p>
+        <div class="row ml-1 mr-1 p-0">
           
-    </p>
-    </li>
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
 
+        
+      </div>
     
-
-    
-    
-    
-    
-
-    <li>
-      <h3><a class="post-title" href="/gsoc/gsoc-2-part-2/">AePPL `Switch`-defined mixtures</a>
-      </h3>
-      <p>Maybe a new functionality to AePPL `Switches` would be to play multiplayer games on it 🤔</p>
-      <p class="post-meta"> 6 min read &nbsp; &middot; &nbsp;
-        August 2, 2022
-      </p>
-      <p class="post-tags">
-        <a href="/gsoc/2022">
-          <i class="fas fa-calendar fa-sm"></i> 2022 </a>
-
-          
-
-          
-    </p>
-    </li>
-
-    
-
-    
-    
-    
-    
-
-    <li>
-      <h3><a class="post-title" href="/gsoc/gsoc-2-part-1/">GSoC 2022 - Part 1</a>
-      </h3>
-      <p>Cheers to another summer of code!</p>
-      <p class="post-meta"> 7 min read &nbsp; &middot; &nbsp;
-        June 29, 2022
-      </p>
-      <p class="post-tags">
-        <a href="/gsoc/2022">
-          <i class="fas fa-calendar fa-sm"></i> 2022 </a>
-
-          
-
-          
-    </p>
-    </li>
-
-    
-  </ul>
 
   
-<nav aria-label="Blog page naviation">
-  <ul class="pagination pagination-lg justify-content-center">
-    <li class="page-item disabled">
-      <a class="page-link" href="" tabindex="-1" aria-disabled="">Newer</a>
-    </li>
-    
-      
-        <li class="page-item active"><a class="page-link" href="/gsoc/index.html" title="gsoc">1</a></li>
-      
-        <li class="page-item "><a class="page-link" href="/gsoc/page/2/index.html" title="gsoc - page 2">2</a></li>
-      
-        <li class="page-item "><a class="page-link" href="/gsoc/page/3/index.html" title="gsoc - page 3">3</a></li>
-      
-    
-    <li class="page-item ">
-      <a class="page-link" href="/gsoc/page/2/">Older</a>
-    </li>
-  </ul>
-</nav>
 
+</div>
 
+  </article>
 
 </div>
 
@@ -289,8 +265,8 @@
     
 <footer class="fixed-bottom">
   <div class="container mt-0">
-    &copy; Copyright 2023 Larry  Dong.
-    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
+    © Copyright 2023 Larry  Dong.
+    Powered by <a href="http://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank" rel="noopener noreferrer">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a>.
 
     
     
